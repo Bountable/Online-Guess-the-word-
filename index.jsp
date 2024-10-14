@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Guess the Word Game</title>
-    <link rel="stylesheet" href="style.css"> <!-- Link to your CSS for styling -->
+    <link rel="stylesheet" href="style.css"> 
     <% if (session.getAttribute("message") != null) { %>
     <p><%= session.getAttribute("message") %></p>
     <% session.removeAttribute("message"); %>

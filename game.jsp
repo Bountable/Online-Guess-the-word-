@@ -1,4 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 
 <html>
@@ -18,24 +20,11 @@
 
 </head>
 <body>
-    <div id="main-container">
-        <h1>Guess the Word Game</h1>
-        <p>Page 1 of 3</p>
-        <p>School of Electrical Engineering and Computer Science</p>
-        <p>The University of Newcastle</p>
-        <p>SENG2050 Introduction to Web Engineering</p>
-        <p>Assignment 2 (15%) – Semester 1, 2024</p>
-        
-        <h2>Assignment 2 Specification</h2>
-        <p>1. Introduction</p>
-        <p>The primary objective of this assignment is to develop an online game called "Guess the Word." Below
-        are the detailed game rules and functionalities:</p>
-        <!-- Rest of the assignment specification goes here -->
 
-        <h2>Game Interface</h2>
-    <c:choose>
-    <c:when test="${gameWon}">
-        <h3>Congratulations! You've guessed the word correctly: ${game.currentWord}</h3>
+<h2>Game Interface</h2>
+<c:choose>
+    <c:when test="${not fn:contains(game.maskedWord, '_')}">
+        <h3>Congratulations! You've completed the word: ${game.currentWord}</h3>
         <p>Score: ${game.score}</p>
         <form action="game" method="get">
             <input type="hidden" name="action" value="new">
@@ -51,6 +40,12 @@
             Guess a letter: <input type="text" name="guess" maxlength="1" required>
             <button type="submit">Submit</button>
         </form>
+            <% if (session.getAttribute("message") != null) { %>
+        <div class="error">
+            <p><%= session.getAttribute("message") %></p>
+        </div>
+        <% session.removeAttribute("message"); %>
+    <% } %>
     </c:otherwise>
 </c:choose>
 

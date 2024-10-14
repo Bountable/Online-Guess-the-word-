@@ -10,28 +10,24 @@ import java.util.Random;
 
 public class WordManager {
 
-    /**
-     * Gets a random word from the specified file path.
-     * @param filePath the path to the text file containing words.
-     * @return A random word from the file.
-     */
+  //get random word from the txt file provdied
     public static String getRandomWord(String filePath) {
         try {
-            // Read all lines from the specified file into a List.
+            // Read all lines 
             List<String> words = Files.readAllLines(Paths.get(filePath));
             
             // Check if the list is empty to avoid IndexOutOfBoundsException.
             if (words.isEmpty()) {
-                return null; // Or consider throwing an exception.
+                return null; 
             }
             
-            // Select a random word from the list.
+            // Select word
             Random random = new Random();
             return words.get(random.nextInt(words.size())).trim();
         } catch (IOException e) {
-            // Handle the exception (e.g., file not found, access denied).
+            
             e.printStackTrace();
-            return null; // Or consider throwing a custom exception.
+            return null; 
         }
     }
 }

@@ -65,30 +65,30 @@ public class GameBean {
 
     private void initializeMaskedWord() {
         if (currentWord == null || isMaskedWordInitialized) {
-            return; // Skip if there's no current word or if we've already initialized the masked word
+            return; // skip if already initalized
         }
     
-        int totalLettersToMask = (int) Math.ceil(currentWord.length() * 2 / 3.0); // Calculate 2/3 of the word to be masked
+        int totalLettersToMask = (int) Math.ceil(currentWord.length() * 2 / 3.0); // hide 2/3rds of the word
         List<Integer> indexesToMask = new ArrayList<>();
         for (int i = 0; i < currentWord.length(); i++) {
-            indexesToMask.add(i); // Add every index of the word to the list
+            indexesToMask.add(i); // Add every word
         }
         Collections.shuffle(indexesToMask); // Randomly shuffle the indexes
     
         StringBuilder maskedWordBuilder = new StringBuilder(currentWord);
         for (int i = 0; i < totalLettersToMask; i++) {
-            maskedWordBuilder.setCharAt(indexesToMask.get(i), '_'); // Mask the letter at the shuffled index
+            maskedWordBuilder.setCharAt(indexesToMask.get(i), '_'); //mask the the random index
         }
     
-        // Ensure at least one letter is always unmasked, especially important for short words
+        // Ensure one letter is shown
         if (totalLettersToMask >= currentWord.length()) {
-            int indexToUnmask = indexesToMask.get(0); // Unmask the first letter in the shuffled list
+            int indexToUnmask = indexesToMask.get(0); // show first letter 
             maskedWordBuilder.setCharAt(indexToUnmask, currentWord.charAt(indexToUnmask));
         }
     
         this.maskedWord = maskedWordBuilder.toString();
     
-        isMaskedWordInitialized = true; // Mark the masked word as initialized
+        isMaskedWordInitialized = true; 
     }
 
     public void guessLetter(char letter) {
@@ -96,14 +96,14 @@ public class GameBean {
             return;
         }
     
-        // Add the letter to guessedLetters if it's part of the currentWord, either as uppercase or lowercase
+        // add letter if upperacse or lowercase
         if (currentWord.toUpperCase().contains(String.valueOf(letter).toUpperCase())) {
-            guessedLetters.add(Character.toUpperCase(letter)); // Consider storing guessed letters in uppercase for consistency
+            guessedLetters.add(Character.toUpperCase(letter)); // store in all upperacse makes it look nicer
         }
     
         incrementRoundNumber();
     
-        // Update only the relevant parts of the masked word
+        // Update oonlyt the importand parts
         StringBuilder updatedMaskedWord = new StringBuilder(maskedWord);
         for (int i = 0; i < currentWord.length(); i++) {
             if (Character.toUpperCase(currentWord.charAt(i)) == Character.toUpperCase(letter)) {
@@ -112,7 +112,7 @@ public class GameBean {
         }
         maskedWord = updatedMaskedWord.toString();
     
-        // Score update and game over check remain as before
+        // update score 
     }
 
    

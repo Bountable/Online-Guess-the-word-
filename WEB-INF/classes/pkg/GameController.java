@@ -40,52 +40,47 @@ public class GameController extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    // Response headers for no caching
+    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+    response.setHeader("Pragma", "no-cache");
+    response.setDateHeader("Expires", 0);
 
+    HttpSession session = request.getSession();
+    GameBean gameBean = (GameBean) session.getAttribute("game");
+    String action = request.getParameter("action");
 
-        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
-        response.setHeader("Pragma", "no-cache"); // HTTP 1.0.
-        response.setDateHeader("Expires", 0); // Proxies.
-    
-        // Process a letter guess
-        HttpSession session = request.getSession();
-        GameBean gameBean = (GameBean) session.getAttribute("game");
-        String action = request.getParameter("action");
-
-        
-        if ("save".equals(action)) {
-            handleSaveAction(request, response, session);
-        } else if ("load".equals(action)) {
-            handleLoadAction(request, response, session);
-        } else {
-            // Your existing POST handling logic
-            if (gameBean == null) {
-                response.sendRedirect("game?action=new");
-                return;
-            }
-    
-            String guess = request.getParameter("guess");
-            if (guess != null && guess.length() == 1) {
-                char guessedLetter = guess.toUpperCase().charAt(0);
-                if (Character.isLetter(guessedLetter)) {
-                    gameBean.guessLetter(guessedLetter);
-                    // Update score after a guess
-                    gameBean.updateScore();
-                }
-            }
-    
-            if (gameBean.isGameOver()) {
-                request.setAttribute("gameOver", true);
-            }
-    
-            request.getRequestDispatcher("/game.jsp").forward(request, response);
+    // Handle different actions
+    if ("save".equals(action)) {
+        handleSaveAction(request, response, session);
+    } else if ("load".equals(action)) {
+        handleLoadAction(request, response, session);
+    } else {
+        // Handle guessing a letter
+        if (gameBean == null) {
+            response.sendRedirect("game?action=new");
+            return;
         }
 
-        
-    
+        String guess = request.getParameter("guess");
+        if (guess != null && guess.length() == 1 && Character.isLetter(guess.charAt(0))) {
+            char guessedLetter = Character.toUpperCase(guess.charAt(0));
 
+            if (gameBean.getGuessedLetters().contains(guessedLetter)) {
+                session.setAttribute("message", "This letter has already been guessed. Try a different one.");
+            } else {
+                gameBean.guessLetter(guessedLetter);
+                gameBean.updateScore();
+            }
+        } else {
+            session.setAttribute("message", "Invalid input. Please enter a single letter.");
+        }
+
+        request.getRequestDispatcher("/game.jsp").forward(request, response);
     }
+}
 
+    //handles saving of a game
     private void handleSaveAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws IOException {
         String username = request.getParameter("username");
         GameBean gameBean = (GameBean) session.getAttribute("game");
@@ -97,6 +92,8 @@ public class GameController extends HttpServlet {
             response.sendRedirect("game.jsp");
         }
     }
+
+    //handles loading of a saved game
     private void handleLoadAction(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         String username = request.getParameter("username");
         Database db = Database.getInstance(getServletContext());
